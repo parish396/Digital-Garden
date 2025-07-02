@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Garden</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+            cursor: pointer;
+        }
+        
+        .container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .flower {
+            position: absolute;
+            transform-origin: center bottom;
+            animation: grow 1.5s ease-out forwards;
+        }
+        
+        .flower-center {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .petal {
+            position: absolute;
+            width: 30px;
+            height: 15px;
+            border-radius: 15px;
+            transform-origin: center left;
+        }
+        
+        .stem {
+            position: absolute;
+            width: 4px;
+            background: linear-gradient(to bottom, #2e8b57, #3cb371);
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: -1;
+        }
+        
+        .leaf {
+            position: absolute;
+            width: 20px;
+            height: 10px;
+            background: #3cb371;
+            border-radius: 10px 0;
+            transform-origin: left center;
+        }
+        
+        @keyframes grow {
+            0% {
+                transform: scale(0);
+            }
+            80% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        .title {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            color: #333;
+            font-size: 2rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            pointer-events: none;
+        }
+        
+        .instructions {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            color: #666;
+            font-size: 1rem;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="garden"></div>
+    <h1 class="title">Digital Garden</h1>
+    <p class="instructions">Click anywhere to plant flowers</p>
+
+    <script>
+        const garden = document.getElementById('garden');
+        const colors = [
+            '#FF9AA2', '#FFB7B2', '#FFDAC1', '#E2F0CB', 
+            '#B5EAD7', '#C7CEEA', '#F8B195', '#F67280',
+            '#C06C84', '#6C5B7B', '#355C7D', '#A8E6CE',
+            '#DCEDC2', '#FFD3B5', '#FFAAA6', '#FF8C94'
+        ];
+        
+        garden.addEventListener('click', (e) => {
+            createFlower(e.clientX, e.clientY);
+        });
+        
+        function createFlower(x, y) {
+            const flower = document.createElement('div');
+            flower.className = 'flower';
+            flower.style.left = `${x}px`;
+            flower.style.top = `${y}px`;
+            
+            // Random flower size
+            const size = 0.5 + Math.random() * 1.5;
+            flower.style.transform = `scale(${size})`;
+            
+            // Create stem
+            const stemHeight = 50 + Math.random() * 100;
+            const stem = document.createElement('div');
+            stem.className = 'stem';
+            stem.style.height = `${stemHeight}px`;
+            flower.appendChild(stem);
+            
+            // Create leaves
+            for (let i = 0; i < 2; i++) {
+                const leaf = document.createElement('div');
+                leaf.className = 'leaf';
+                leaf.style.left = '50%';
+                leaf.style.bottom = `${20 + Math.random() * (stemHeight - 40)}px`;
+                leaf.style.transform = `rotate(${i === 0 ? -45 : 45}deg) scale(${0.7 + Math.random() * 0.6})`;
+                flower.appendChild(leaf);
+            }
+            
+            // Create flower center
+            const centerColor = colors[Math.floor(Math.random() * colors.length)];
+            const center = document.createElement('div');
+            center.className = 'flower-center';
+            center.style.backgroundColor = centerColor;
+            flower.appendChild(center);
+            
+            // Create petals
+            const petalColor = colors[Math.floor(Math.random() * colors.length)];
+            const petalCount = 5 + Math.floor(Math.random() * 7);
+            
+            for (let i = 0; i < petalCount; i++) {
+                const petal = document.createElement('div');
+                petal.className = 'petal';
+                petal.style.backgroundColor = petalColor;
+                petal.style.opacity = 0.7 + Math.random() * 0.3;
+                petal.style.transform = `rotate(${(i * 360 / petalCount)}deg) translateX(15px)`;
+                flower.appendChild(petal);
+            }
+            
+            garden.appendChild(flower);
+            
+            // Remove old flowers if there are too many
+            const flowers = document.querySelectorAll('.flower');
+            if (flowers.length > 20) {
+                flowers[0].remove();
+            }
+        }
+        
+        // Create some initial flowers
+        for (let i = 0; i < 5; i++) {
+            const x = Math.random() * window.innerWidth;
+            const y = Math.random() * window.innerHeight * 0.8;
+            createFlower(x, y);
+        }
+    </script>
+</body>
+</html>
